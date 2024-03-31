@@ -1,0 +1,3 @@
+pip install flask
+pip install resemblyzer
+pip install numpy      
