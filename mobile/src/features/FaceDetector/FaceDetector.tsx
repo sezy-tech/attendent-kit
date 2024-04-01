@@ -21,25 +21,13 @@ import { calculateEuclideanDistance } from './faceDetector.helpers';
 const limitedDistanceValue = 2
 
 const FaceDetector = () => {
-  const [isScaning, setScanning] = useState(true)
   const [isSuccess, setSuccess] = useState(false)
   const intervalId = useRef<NodeJS.Timeout>()
-  const [image, setImage] = useState<ImageDetails>();
   const [image1, setImage1] = useState<string>();
-
-  const [landmarks, setLandmarks] = useState<number[][][]>()
-  // const images = useRef<any>({})
-  // const count = useRef(0)
-  const images = { "bottom": "file:///data/user/0/com.attendentkit/cache/rn_image_picker_lib_temp_e7fd3396-597f-4a0a-b1e8-717e77f38615.jpg", "center": "file:///data/user/0/com.attendentkit/cache/rn_image_picker_lib_temp_2ceec509-33f0-41b9-9dd8-fff4add3450f.jpg", "left": "file:///data/user/0/com.attendentkit/cache/rn_image_picker_lib_temp_b3ded312-08ad-47ec-82b4-d0d53065543d.jpg", "left_bottom": "file:///data/user/0/com.attendentkit/cache/rn_image_picker_lib_temp_7c72e9a5-1ac5-4120-b407-75e74b9ddfcb.jpg", "right": "file:///data/user/0/com.attendentkit/cache/rn_image_picker_lib_temp_3ffcff65-8fd6-40ac-9d7e-dbd6ceba17ea.jpg", "right_bottom": "file:///data/user/0/com.attendentkit/cache/rn_image_picker_lib_temp_3e17c530-f401-4bb8-85ed-fa796b8986a3.jpg", "top": "file:///data/user/0/com.attendentkit/cache/rn_image_picker_lib_temp_b463c465-dc4c-4b9c-a0fd-050b9d77b9fb.jpg", "top_left": "file:///data/user/0/com.attendentkit/cache/rn_image_picker_lib_temp_fa28d33c-8be7-4d8e-852c-7b6dfe5da570.jpg", "top_right": "file:///data/user/0/com.attendentkit/cache/rn_image_picker_lib_temp_afd367b1-7db4-46fc-9af9-423fc7fc15ba.jpg" }
-
-  const [face, setFace] = useState<Face>()
-  const targetDistances = [26.65950953494805, 23.822590634332396, 23.195683806325963, 24.30919293693549, 27.299341677703406, 25.88332963783173, 32.9412075850535, 24.999718115210598, 39.962105251256204]
-  const [count, setCount] = useState<number>(0);
   const [number, setNumber] = useState<number>(0);
 
   const landmarkPoints = useRef<number[][][]>([])
 
-  const target = [[53.67827814275568, 87.56050248579545], [68.23191139914773, 80.52951882102273], [77.369384765625, 65.90021306818181], [52.80758389559659, 58.48880282315341], [68.55708451704545, 40.65663840553977], [32.05854936079545, 40.57816938920455], [25.63418856534091, 66.00152033025569], [88.74479536576705, 54.72749467329545], [37.90138938210227, 81.2259188565341], [9.729037198153408, 56.91582697088068]]
   const processImage = async (image: string) => {
     const faces = await FaceDetection.detect(image, {
       landmarkMode: 'all',
