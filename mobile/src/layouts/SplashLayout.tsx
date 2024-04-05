@@ -3,11 +3,35 @@ import React, { useEffect } from 'react';
 import {
     Text,
 } from 'react-native';
+import { useRouter } from '../store/router.store';
+import userApi from '../api/user.api';
+import { User } from 'firebase/auth';
+import { useUserStore } from '../store/user.store';
 
 
 function SplashLayout() {
+const {navigate} = useRouter()
+const userStore = useUserStore();
 
+ async function FetchUser(){
+    const userProfileData = await userApi.getProfile()
+    if(!userProfileData){
+        navigate('/login')
+    }
+    if(!userProfileData?.hasFaceInput){
+        navigate('/onboarding') 
+    }
+    if(!userProfileData?.hasSpeechInput){
+        navigate('/onboarding') 
+    }
+    else{
+    userStore.actions.setProfile(userProfileData)
+    console.log( userStore.data.state.verify.faceVerify)
+    navigate('/onboarding') 
+    }
+}
     useEffect(() => {
+        FetchUser()
         // router.dispatch.navigate(firebase.auth().currentUser ? '/home' : '/login')
         // const user = firebase.auth().currentUser;
 
@@ -30,6 +54,7 @@ function SplashLayout() {
         // } else {
         //     console.log('User is not authenticated.');
         // }
+        // navigate('/onboarding')
     }, [])
 
     return (

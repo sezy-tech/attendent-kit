@@ -1,14 +1,14 @@
 {
   "project_info": {
-    "project_number": "749914565984",
-    "firebase_url": "https://facenet-uat-default-rtdb.asia-southeast1.firebasedatabase.app",
-    "project_id": "facenet-uat",
-    "storage_bucket": "facenet-uat.appspot.com"
+    "project_number": "1046435121095",
+    "firebase_url": "https://khang-a-default-rtdb.firebaseio.com",
+    "project_id": "khang-a",
+    "storage_bucket": "khang-a.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:749914565984:android:c9c20fcfe2d6d8be4dc205",
+        "mobilesdk_app_id": "1:1046435121095:web:e2d1a5b68a9d02081b3be2",
         "android_client_info": {
           "package_name": "com.attendentkit"
         }
@@ -16,7 +16,7 @@
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyAzIeMijvjEMoAOzIZg9qHorWUkbccRVFA"
+          "current_key": "AIzaSyAQABpSao1uYT9oZjeH-vkHIHgFCUktioQ"
         }
       ],
       "services": {

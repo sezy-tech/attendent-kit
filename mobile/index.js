@@ -15,13 +15,14 @@ import messaging from '@react-native-firebase/messaging';
 
 // Your web app's Firebase configuration
 // const firebaseConfig = {
-//     apiKey: "AIzaSyChnWiMqSOmZFyhsXA_ZxhGugu1ALrSqcQ",
-//     authDomain: "facenet-uat.firebaseapp.com",
-//     projectId: "facenet-uat",
-//     storageBucket: "facenet-uat.appspot.com",
-//     messagingSenderId: "749914565984",
-//     appId: "1:749914565984:web:52765bba1dc0b8ed4dc205",
-//     // databaseURL: 'https://facenet-uat-default-rtdb.asia-southeast1.firebasedatabase.app'
+//   apiKey: "AIzaSyAQABpSao1uYT9oZjeH-vkHIHgFCUktioQ",
+//   authDomain: "khang-a.firebaseapp.com",
+//   databaseURL: "https://khang-a-default-rtdb.firebaseio.com",
+//   projectId: "khang-a",
+//   storageBucket: "khang-a.appspot.com",
+//   messagingSenderId: "1046435121095",
+//   appId: "1:1046435121095:web:e2d1a5b68a9d02081b3be2",
+//   measurementId: "G-4M9MEV6T4R"
 // };
 
 // // Initialize Firebase

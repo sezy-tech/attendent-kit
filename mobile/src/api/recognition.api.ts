@@ -6,14 +6,24 @@ const recognitionApi = {
     const rsp = await apiClient.get(url);
     return rsp.data
   },
-  addFace: async (landmark: number[][][]) => {
-    const url = `/user/face/add`;
-    const rsp = await apiClient.post(url, { landmark });
+  addFace: async (landmark: number[][]) => {
+    const url = `/user-recognition/face/add`;
+    const rsp = await apiClient.post<boolean>(url, { landmark });
     return rsp.data
   },
-  verifyFace: async (landmark: number[][][]) => {
-    const url = `/user/face/verify`;
-    const rsp = await apiClient.post(url, { landmark });
+  verifyFace: async (landmark: number[][]) => {
+    const url = `/user-recognition/face/verify`;
+    const rsp = await apiClient.post<boolean>(url, { landmark });
+    return rsp.data
+  },
+  addSpeech : async (voice : string)=>{
+    const url = `/user-recognition/speech/add`;
+    const rsp = await apiClient.post<boolean>(url, { path : voice });
+    return rsp.data
+  },
+  verifySpeech: async (voice : string) => {
+    const url = `/user-recognition/speech/verify`;
+    const rsp = await apiClient.post<boolean>(url, { path : voice });
     return rsp.data
   },
 };

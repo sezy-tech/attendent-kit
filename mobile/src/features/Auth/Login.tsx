@@ -1,16 +1,15 @@
 import { Button, Text, TextInput, View } from "react-native"
 import authApi from "../../api/auth.api"
-import useCustomNavigation from "../../core/hooks/useCustomNavigation";
-
+import { useRouter } from "../../store/router.store"
 const Login = () => {
-    const { navigate } = useCustomNavigation()
+    const { navigate } = useRouter()
     const login = async () => {
         try {
             const aa = await authApi.login({
-                "email": "lthtv8@gmail.com",
+                "email": "test@gmail.com",
                 "password": "Abc123456"
             })
-            navigate('Home')
+            navigate('/dashboard')
 
         } catch (e) {
             console.log(e)

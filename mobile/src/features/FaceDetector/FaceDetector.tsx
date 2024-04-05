@@ -61,6 +61,7 @@ const FaceDetector = () => {
         }
       }
       landmarkPoints.current.push(newLandmarkPoint)
+      
       setNumber(landmarkPoints.current.length)
       setImage1(image)
       // console.log(landmarkPoints.current)
@@ -127,7 +128,6 @@ const FaceDetector = () => {
     const path = `file:///${photo.path}`
     setImage1(path)
     processImage(path)
-
   };
   const takePicture2 = async () => {
     if (!cameraRef.current) return
@@ -173,17 +173,17 @@ const FaceDetector = () => {
       ]}
     >
       <Text>111</Text>
-      <Camera
+      {/* <Camera
         ref={cameraRef}
         style={StyleSheet.absoluteFill}
         device={device}
         isActive={true}
         photo={true}
-      />
+      /> */}
       {/* <ChooseImageButton onChoose={handleChoose} /> */}
-      {image1 && <PreviewImage source={image1} />}
+      {/* {image1 && <PreviewImage source={image1} />}
       <Text>{String(number)}</Text>
-      {isSuccess && <Text>Success</Text>}
+      {isSuccess && <Text>Success</Text>} */}
       <Button title={'Face Input'} onPress={handleFaceInput} />
       <Button title={'Face Verify'} onPress={handleFaceVerify} />
     </View>
