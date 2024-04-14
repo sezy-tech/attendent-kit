@@ -9,9 +9,11 @@ export namespace DBCollection {
 
 export interface User {
   _id: string,
+  phone : string,
   name : string,
   email : string,
   hasFaceInput: boolean,
   hasSpeechInput: boolean,
   role: number,
+  deviceIds:string
 };

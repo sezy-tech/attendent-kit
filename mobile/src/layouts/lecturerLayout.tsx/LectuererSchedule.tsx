@@ -1,14 +1,14 @@
 import {Text, View} from 'react-native';
-import userApi, {Timetable} from '../api/user.api';
 import {useEffect, useState} from 'react';
 import {Avatar, Card, IconButton} from 'react-native-paper';
-import UnixTimestampToTime from '../components/FormatTime';
-import Icon from '../components/Icon';
-import Header from '../components/Header';
+import userApi, { Timetable } from '../../api/user.api';
+import { Header } from 'react-native/Libraries/NewAppScreen';
+import Icon from '../../components/Icon';
+import UnixTimestampToTime from '../../components/FormatTime';
 export default function Schedule() {
   const [schedule, setSchedule] = useState<Timetable[]>([]);
   const fetchData = async () => {
-    const data = await userApi.studentTimetable();
+    const data = await userApi.lecturerTimetable();
     console.log(data);
     setSchedule(data);
   };

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, {useEffect, useRef} from 'react';
 import {
   Animated,
   Easing,
@@ -7,15 +7,15 @@ import {
   StyleSheet,
   View,
 } from 'react-native';
-import { ScrollView } from 'react-native-gesture-handler';
+import {ScrollView} from 'react-native-gesture-handler';
 import theme from '../../styles/theme.style';
 import Icon from '../../components/Icon';
 // import DB from '../../db';
-import { modelStore, useModelStore } from '../../store/model.store';
-import VoiceRecord, { VoiceRecordRef } from '../../components/VoiceRecord';
+import {modelStore, useModelStore} from '../../store/model.store';
+import VoiceRecord, {VoiceRecordRef} from '../../components/VoiceRecord';
 import Text from '../../components/Text';
 import BackgroundImage from '../../components/BackgroundImage';
-import { useUserStore, userStore } from '../../store/user.store';
+import {useUserStore, userStore} from '../../store/user.store';
 
 function CreateUserModelRecord() {
   const userStore = useUserStore();
@@ -23,21 +23,16 @@ function CreateUserModelRecord() {
   const scriptContentPause = useRef(false);
 
   return (
-    <View style={[styles.container]}>
-      {/* <BackgroundImage source={require('../../../assets/images/bg10.jpeg')} /> */}
-      <View>
-        <BackgroundImage source={require('../../../assets/images/bg3.jpeg')} />
-        <View style={styles.recorderWrapper}>
-       <Recording1Stage />
-        {/* {(stepTut == 1 || step == 0) && <VoiceRecord key={0} ref={recorder1Ref} maxDuration={5} recordName="read" cloudPath={getClipCloudPath} onStop={onStep1RecordStop} onGetLocalPath={onGetLocalPath(0)} />}
-                {(stepTut == 2 || step == 1) && <VoiceRecord key={1} ref={recorder2Ref} maxDuration={8} recordName="sing" cloudPath={getClipCloudPath} onStop={onStep2RecordStop} onGetLocalPath={onGetLocalPath(1)} />} */}
-      </View>
-      </View>
-      
-      
-
-      {/* <Button label='play' onPress={() => setStep(s => s + 1)} /> */}
-    </View>
+    <View
+    style={{
+      flex: 1,
+      alignContent: 'center',
+      alignItems: 'center',
+      flexDirection: 'column',
+      backgroundColor:'#e1ebe5'
+    }}>
+    <Recording1Stage />
+  </View>
   );
 }
 
@@ -58,49 +53,48 @@ const getClipCloudPath = () => {
   if (!userid) {
     //Sentry
   }
-  console.log(userid)
-  return `onboarding/${userid}/${new Date().getTime()}.mp3`;
+  console.log(userid);
+  return `voices/onboarding/${userid}.mp3`;
 };
 
 const Recording1Stage = () => {
   const ref = useRef<VoiceRecordRef>(null);
-const onPress=()=>{
-
-}
   useEffect(() => {
-    ref.current?.start();
+    // ref.current?.start();
   }, []);
 
   const onStop = () => {
     modelStore.actions.setRecordingStage('fail');
   };
+  const voiceRecordRef = useRef<any>(null);
+  const onButtonPress = () => {
+    voiceRecordRef.current?.start();
+  };
   return (
-    <View style={{alignContent : 'center', alignItems : 'center'}}>
-<VoiceRecord
-      key={0}
-      ref={ref}
-      maxDuration={1}
-      recordName='read'
-      cloudPath={getClipCloudPath}
-      onStop={onStop}
-      onGetLocalPath={onGetLocalPath(0)}
-      // onUploadingPropgress={onUploadingPropgress(0)}
-      // onStart={()=>StartRecordButton}
-    />
-
+    <View style={{position: 'absolute'}}>
+        <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+      <VoiceRecord
+        key={0}
+        ref={voiceRecordRef}
+        maxDuration={1}
+        recordName="read"
+        cloudPath={getClipCloudPath}
+        onStop={onStop}
+        onGetLocalPath={onGetLocalPath(0)}
+        // onUploadingPropgress={onUploadingPropgress(0)}
+        // onStart={() => StartRecordButton}
+      />
+      <StartRecordButton onPress={onButtonPress} />
+    </View>
     </View>
   );
 };
-
-
-
 
 interface StartRecordButtonProps {
   onPress: () => void;
 }
 
-
-function StartRecordButton() {
+function StartRecordButton({onPress}: StartRecordButtonProps) {
   const animationValue1 = useRef(new Animated.Value(75)).current;
   useEffect(() => {
     // animationValue1.setValue(0);
@@ -143,8 +137,7 @@ function StartRecordButton() {
         marginTop: 32,
         position: 'relative',
       }}
-      onPress={()=>{}}
-    >
+      onPress={onPress}>
       <View
         style={{
           position: 'absolute',
@@ -155,8 +148,7 @@ function StartRecordButton() {
           // backgroundColor: 'blue',
           alignItems: 'center',
           justifyContent: 'center',
-        }}
-      >
+        }}>
         <Animated.View
           style={{
             // width: 50,
@@ -166,8 +158,7 @@ function StartRecordButton() {
             borderRadius: 100,
             backgroundColor: `${theme.pink[300]}88`,
             // backgroundColor: 'red',
-          }}
-        ></Animated.View>
+          }}></Animated.View>
       </View>
 
       <View
@@ -180,9 +171,8 @@ function StartRecordButton() {
           alignItems: 'center',
           justifyContent: 'center',
           position: 'relative',
-        }}
-      >
-        <Icon name='record' width={25} height={25} />
+        }}>
+        <Icon name="record" width={25} height={25} />
       </View>
     </Pressable>
   );
@@ -193,66 +183,65 @@ interface OnboardingScriptProps {
   paused: React.MutableRefObject<boolean>;
 }
 
-function OnboardingScript({ scripts, paused }: OnboardingScriptProps) {
-  const scrollViewRef = useRef<any>(null);
-  const scriptContentScrollOffset = useRef(0);
+// function OnboardingScript({scripts, paused}: OnboardingScriptProps) {
+//   const scrollViewRef = useRef<any>(null);
+//   const scriptContentScrollOffset = useRef(0);
 
-  useEffect(() => {
-    const scrollToBottom = () => {
-      if (scrollViewRef.current && !paused.current) {
-        scriptContentScrollOffset.current += 0.5;
-        scrollViewRef.current.scrollTo({
-          x: 0,
-          y: scriptContentScrollOffset.current,
-          animated: false,
-        });
-      }
-    };
+//   useEffect(() => {
+//     const scrollToBottom = () => {
+//       if (scrollViewRef.current && !paused.current) {
+//         scriptContentScrollOffset.current += 0.5;
+//         scrollViewRef.current.scrollTo({
+//           x: 0,
+//           y: scriptContentScrollOffset.current,
+//           animated: false,
+//         });
+//       }
+//     };
 
-    // const interval = setTimeout(scrollToBottom, 500); // Delay scrolling for 1 second
-    const interval = setInterval(
-      () => requestAnimationFrame(scrollToBottom),
-      100,
-    ); // Delay scrolling for 1 second
+//     // const interval = setTimeout(scrollToBottom, 500); // Delay scrolling for 1 second
+//     const interval = setInterval(
+//       () => requestAnimationFrame(scrollToBottom),
+//       100,
+//     ); // Delay scrolling for 1 second
 
-    return () => {
-      clearInterval(interval);
-      // clearTimeout(interval)
-    };
-  }, []);
+//     return () => {
+//       clearInterval(interval);
+//       // clearTimeout(interval)
+//     };
+//   }, []);
 
-  return (
-    <View style={styles.scriptWrapper}>
-      {/* <BackgroundImage source={require('../../../assets/images/bg5.jpeg')} /> */}
-      <ScrollView
-        onScrollBeginDrag={() => (paused.current = true)}
-        onScrollEndDrag={() => (paused.current = false)}
-        ref={scrollViewRef}
-        onScroll={e => {
-          scriptContentScrollOffset.current = e.nativeEvent.contentOffset.y;
-        }}
-        scrollEventThrottle={16} // Adjust this value for smoother or slower animations
-      >
-        {scripts?.map((script, scriptIndex) => (
-          <View key={scriptIndex} style={styles.scriptItem}>
-            {script.map((content, contentIndex) => (
-              <Text
-                key={contentIndex}
-                style={
-                  contentIndex
-                    ? styles.scriptContent
-                    : styles.scriptContentTitle
-                }
-              >
-                {content}
-              </Text>
-            ))}
-          </View>
-        ))}
-      </ScrollView>
-    </View>
-  );
-}
+//   return (
+//     <View style={styles.scriptWrapper}>
+//       {/* <BackgroundImage source={require('../../../assets/images/bg5.jpeg')} /> */}
+//       <ScrollView
+//         onScrollBeginDrag={() => (paused.current = true)}
+//         onScrollEndDrag={() => (paused.current = false)}
+//         ref={scrollViewRef}
+//         onScroll={e => {
+//           scriptContentScrollOffset.current = e.nativeEvent.contentOffset.y;
+//         }}
+//         scrollEventThrottle={16} // Adjust this value for smoother or slower animations
+//       >
+//         {scripts?.map((script, scriptIndex) => (
+//           <View key={scriptIndex} style={styles.scriptItem}>
+//             {script.map((content, contentIndex) => (
+//               <Text
+//                 key={contentIndex}
+//                 style={
+//                   contentIndex
+//                     ? styles.scriptContent
+//                     : styles.scriptContentTitle
+//                 }>
+//                 {content}
+//               </Text>
+//             ))}
+//           </View>
+//         ))}
+//       </ScrollView>
+//     </View>
+//   );
+// }
 
 const styles = StyleSheet.create({
   container: {

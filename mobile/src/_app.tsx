@@ -1,30 +1,30 @@
-import React, { useEffect, useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import {
+  Alert,
   PermissionsAndroid,
   Platform,
   StyleSheet,
   useColorScheme,
   View,
 } from 'react-native';
-import { PERMISSIONS, RESULTS, check, request } from 'react-native-permissions';
-
-import { NavigationContainer } from '@react-navigation/native';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import {PERMISSIONS, RESULTS, check, request} from 'react-native-permissions';
+import messaging from '@react-native-firebase/messaging';
+import {NavigationContainer} from '@react-navigation/native';
+import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import HomeLayout from './layouts/HomeLayout';
 import LoginLayout from './layouts/LoginLayout';
-import { RootStackParamList } from './core/models/route.model';
-import GetFaceMark from './layouts/FaceInput';
+import {RootStackParamList} from './core/models/route.model';
 import AppRouting from './AppRouting';
-import { StoreProvider } from './core/redux-context/store';
-import { UserStoreProvider } from './store/user.store';
-import { PaperProvider } from 'react-native-paper';
-
+import {StoreProvider} from './core/redux-context/store';
+import {UserStoreProvider, useUserStore, userStore} from './store/user.store';
+import {PaperProvider} from 'react-native-paper';
+import {GestureHandlerRootView} from 'react-native-gesture-handler';
+import userApi from './api/user.api';
 
 function App(): JSX.Element {
-
   const isDarkMode = useColorScheme() === 'dark';
   // PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS);
-  //ios
+  // ios
   //   import messaging from '@react-native-firebase/messaging';
 
   // async function requestUserPermission() {
@@ -37,9 +37,6 @@ function App(): JSX.Element {
   //     console.log('Authorization status:', authStatus);
   //   }
   // }
-
-
-
 
   // useEffect(() => {
   //   const checkCameraPermission = async () => {
@@ -73,30 +70,40 @@ function App(): JSX.Element {
 
   //   checkCameraPermission();
   // }, []);
+
   useEffect(() => {
-    requestNotificationPermission();
-    requestCameraPermission();
-    
+    const requestPermissions = async () => {
+      try {
+        await requestNotificationPermission();
+        await requestCameraPermission();
+        const unsubscribe = messaging().onMessage(async remoteMessage => {
+          console.log('FCM Message:', remoteMessage);
+        });
+        return unsubscribe;
+      } catch (error) {
+        console.error('Error in useEffect:', error);
+      }
+    };
+  
+    requestPermissions();
+  
+    // Clean up function
+    return () => {
+      // Unsubscribe from messaging listener here if needed
+    };
   }, []);
   return (
-<StoreProvider providers={[
-      UserStoreProvider
-    ]}>
-    <PaperProvider>
-
-<View style={styles.app}>
-     <AppRouting />
-   </View>
-   </PaperProvider>
-
-    </StoreProvider>
-
-    
-    
+    <GestureHandlerRootView>
+      <StoreProvider providers={[UserStoreProvider]}>
+        <PaperProvider>
+          <View style={styles.app}>
+            <AppRouting />
+          </View>
+        </PaperProvider>
+      </StoreProvider>
+    </GestureHandlerRootView>
   );
 }
-
-
 
 const styles = StyleSheet.create({
   app: {
@@ -143,8 +150,18 @@ async function requestNotificationPermission() {
     );
     // const granted = await PushNotification.requestPermissions(['alert', 'badge', 'sound']);
     if (granted) {
-      console.log('Notification permissions granted');
-      // You can now schedule and send notifications
+      console.log('Notification permissions granted',granted);
+      const fcmToken = await messaging().getToken();
+      if (fcmToken) {
+        console.log('FCM Token:', fcmToken);
+        // await userApi.deviceId(fcmToken);
+
+        // Now you have the FCM token, you can save it to your server or use it to send notifications
+        //call an api to save deviveId
+        // userStore.actions.setDeviceId(fcmToken);
+      } else {
+        console.log('FCM Token not available');
+      }
     } else {
       console.log('Notification permissions denied');
       // Handle the case where the user denied permissions
@@ -179,6 +196,7 @@ async function requestNotificationPermission() {
   //   console.error('Error checking camera permission:', error);
   // }
 }
+
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 

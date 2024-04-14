@@ -18,8 +18,6 @@ export default function VoiceInput(){
    
     
     return(
-        <View style={{flex : 1, alignContent: 'center', justifyContent : 'flex-end', flexDirection : 'column'}}>
             <CreateUserModelRecord />
-        </View>
     )
 }

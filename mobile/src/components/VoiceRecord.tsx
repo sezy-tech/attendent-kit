@@ -34,11 +34,11 @@ import type {
 } from 'react-native-audio-recorder-player';
 // import fs from 'react-native-fs';
 // import Icon from './Icon'
-import theme from '../styles/theme.style'
+import theme from '../styles/theme.style';
 import Button from './Button';
 import FBStorage from '@react-native-firebase/storage';
 import recognitionApi from '../api/recognition.api';
-import { useRouter } from '../store/router.store';
+import {useRouter} from '../store/router.store';
 import Icon from './Icon';
 
 export interface VoiceRecordRef {
@@ -81,12 +81,12 @@ const VoiceRecord = forwardRef<VoiceRecordRef, VoiceRecordProps>(
   ) => {
     let audioRecorderPlayer = useMemo(() => new AudioRecorderPlayer(), []);
     const maxDurationMiliseconds = useMemo(
-      () => (maxDuration ?? 0) * 1000,
+      () => (maxDuration ?? 0) * 10000,
       [maxDuration],
     );
     audioRecorderPlayer.setSubscriptionDuration(0.1);
     console.log('========================= 11111');
-    const {navigate} = useRouter()
+    const {navigate} = useRouter();
     const uriRef = useRef('');
     const [recordStatus, setRecordStatus] = useState<
       'INITIAL' | 'RECORDING' | 'PAUSED' | 'STOPPED'
@@ -164,9 +164,9 @@ const VoiceRecord = forwardRef<VoiceRecordRef, VoiceRecordProps>(
       };
 
       await audioRecorderPlayer.stopRecorder();
-      console.log(path)
+      console.log(path);
       const uri = await audioRecorderPlayer.startRecorder(path, audioSet);
-      console.log('uri'+uri)
+      console.log('uri' + uri);
       onGetLocalPath?.(uri);
       uriRef.current = uri;
 
@@ -174,7 +174,6 @@ const VoiceRecord = forwardRef<VoiceRecordRef, VoiceRecordProps>(
         // console.log('record-back', e);
         if (e.currentPosition >= maxDurationMiliseconds) onStopRecord();
       });
-      
     };
 
     const onPauseRecord = async () => {
@@ -211,7 +210,7 @@ const VoiceRecord = forwardRef<VoiceRecordRef, VoiceRecordProps>(
     };
     const uploadToCloud = () => {
       // Create a reference to the destination in Firebase Storage
-      console.log(uriRef.current)
+      console.log(uriRef.current);
       const storageRef = FBStorage().ref().child(cloudPath());
       const task = storageRef.putFile(uriRef.current);
       task.on(
@@ -229,118 +228,120 @@ const VoiceRecord = forwardRef<VoiceRecordRef, VoiceRecordProps>(
           // Upload completed successfully, now you can get the download URL
           task.snapshot?.ref.getDownloadURL().then(async downloadURL => {
             console.log('File available at', downloadURL);
-            await recognitionApi.addSpeech(downloadURL)
+            await recognitionApi.addSpeech(downloadURL);
           });
-          navigate('')
+          navigate('');
         },
       );
-      
     };
     return (
       <View>
-          <Text style={{fontSize : 20}}>answear this question in 15s</Text>
-          <Text>what is your name</Text>
-        <Text style={{ paddingTop:500,position:'relative'}}></Text>
- <StartRecodButton onPress={onStartRecord} />
- <View style={{height: 500,paddingLeft: 90}}>
-       <RecordingTimer
-          audioRecorderPlayer={audioRecorderPlayer}
-          maxDurationMiliseconds={maxDurationMiliseconds}
-        />
+        <Text style={{flex: 1, fontSize: 20, paddingTop: 50}}>
+          answear this question in 10s
+        </Text>
+        <Text style={{fontSize: 16}}>what is your name ?</Text>
+        <View
+          style={{
+            paddingTop: 400,
+          }}>
+          <View style={{left: 0}}>
+            <RecordingTimer
+              audioRecorderPlayer={audioRecorderPlayer}
+              maxDurationMiliseconds={maxDurationMiliseconds}
+            />
+          </View>
+        </View>
       </View>
-     
-      </View>
- 
     );
   },
 );
-function StartRecodButton({ onPress }: StartRecordButtonProps){
-  const animationValue1 = useRef(new Animated.Value(75)).current;
-  useEffect(() => {
-    // animationValue1.setValue(0);
-    const animation1 = Animated.timing(animationValue1, {
-      toValue: 90,
-      duration: 1000,
-      easing: Easing.linear,
-      useNativeDriver: false,
-    });
+// function StartRecodButton({ onPress }: StartRecordButtonProps){
+//   const animationValue1 = useRef(new Animated.Value(75)).current;
+//   useEffect(() => {
+//     // animationValue1.setValue(0);
+//     const animation1 = Animated.timing(animationValue1, {
+//       toValue: 90,
+//       duration: 1000,
+//       easing: Easing.linear,
+//       useNativeDriver: false,
+//     });
 
-    const animation2 = Animated.timing(animationValue1, {
-      toValue: 75,
-      duration: 1000,
-      easing: Easing.linear,
-      useNativeDriver: false,
-    });
+//     const animation2 = Animated.timing(animationValue1, {
+//       toValue: 75,
+//       duration: 1000,
+//       easing: Easing.linear,
+//       useNativeDriver: false,
+//     });
 
-    Animated.sequence([animation1, animation2]);
+//     Animated.sequence([animation1, animation2]);
 
-    const animationLoop = Animated.loop(
-      Animated.sequence([animation1, animation2]),
-    );
-    animationLoop.start();
+//     const animationLoop = Animated.loop(
+//       Animated.sequence([animation1, animation2]),
+//     );
+//     animationLoop.start();
 
-    return () => {
-      animationLoop.stop();
-    };
-  }, []);
+//     return () => {
+//       animationLoop.stop();
+//     };
+//   }, []);
 
-  return (
-    <Pressable
-      style={{
-        // backgroundColor: theme.pink[300],
-        // backgroundColor: '#ddd',
-        width: 110,
-        height: 110,
-        borderRadius: 80,
-        alignItems: 'center',
-        justifyContent: 'center',
-        marginTop: 32,
-        position: 'relative',
-      }}
-      onPress={onPress}
-    >
-      <View
-        style={{
-          position: 'absolute',
-          top: 0,
-          left: 0,
-          width: '100%',
-          height: '100%',
-          // backgroundColor: 'blue',
-          alignItems: 'center',
-          justifyContent: 'center',
-        }}
-      >
-        <Animated.View
-          style={{
-            // width: 50,
-            // height: 50,
-            width: animationValue1,
-            height: animationValue1,
-            borderRadius: 100,
-            backgroundColor: `${theme.pink[300]}88`,
-            // backgroundColor: 'red',
-          }}
-        ></Animated.View>
-      </View>
+//   return (
+//     <Pressable
+//       style={{
+//         // backgroundColor: theme.pink[300],
+//         // backgroundColor: '#ddd',
+//         width: 110,
+//         height: 110,
+//         borderRadius: 80,
+//         alignItems: 'center',
+//         justifyContent: 'center',
+//         marginTop: 32,
+//         position: 'relative',
+//       }}
+//       onPress={onPress}
+//     >
+//       <View
+//         style={{
+//           position: 'absolute',
+//           top: 0,
+//           left: 0,
+//           width: '100%',
+//           height: '100%',
+//           // backgroundColor: 'blue',
+//           alignItems: 'center',
+//           justifyContent: 'center',
+//         }}
+//       >
+//         <Animated.View
+//           style={{
+//             // width: 50,
+//             // height: 50,
+//             width: animationValue1,
+//             height: animationValue1,
+//             borderRadius: 100,
+//             backgroundColor: `${theme.pink[300]}88`,
+//             // backgroundColor: 'red',
+//           }}
+//         ></Animated.View>
+//       </View>
 
-      <View
-        style={{
-          backgroundColor: theme.pink[300],
-          // backgroundColor: '#ff3d3daa',
-          width: 70,
-          height: 70,
-          borderRadius: 80,
-          alignItems: 'center',
-          justifyContent: 'center',
-          position: 'relative',
-        }}
-      >
-        <Icon name='record' width={25} height={25} />
-      </View>
-    </Pressable>
-  );
-}
+//       <View
+//         style={{
+//           backgroundColor: theme.pink[300],
+//           // backgroundColor: '#ff3d3daa',
+//           width: 70,
+//           height: 70,
+//           borderRadius: 80,
+//           alignItems: 'center',
+//           justifyContent: 'center',
+//           position: 'relative',
+//         }}
+//       >
+//         <Icon name='record' width={25} height={25} />
+//       </View>
+//     </Pressable>
+//   );
+// }
 
 interface RecordingTimerProps {
   audioRecorderPlayer: AudioRecorderPlayer;
@@ -348,10 +349,7 @@ interface RecordingTimerProps {
 }
 
 const RecordingTimer = forwardRef(
-  (
-    { audioRecorderPlayer, maxDurationMiliseconds }: RecordingTimerProps,
-    ref,
-  ) => {
+  ({audioRecorderPlayer, maxDurationMiliseconds}: RecordingTimerProps, ref) => {
     const timerTextWidthRef = useRef<any>(0);
     const [timer, setTimer] = useState(0);
 
@@ -377,8 +375,7 @@ const RecordingTimer = forwardRef(
             height: 4,
             width: '100%',
             position: 'relative',
-          }}
-        >
+          }}>
           <View
             style={{
               backgroundColor: theme.gray[500],
@@ -387,23 +384,20 @@ const RecordingTimer = forwardRef(
               position: 'absolute',
               left: 0,
               top: 0,
-            }}
-          ></View>
+            }}></View>
         </View>
-   
         <Text
           onLayout={e =>
             (timerTextWidthRef.current = e.nativeEvent.layout.width)
           }
           style={{
             position: 'absolute',
-            left:
-              progressWidth + timerTextWidthRef.current >= screenWidth
-                ? screenWidth - timerTextWidthRef.current
-                : progressWidth,
-            paddingRight: 8,
-          }}
-        >
+            left: Math.min(
+              screenWidth - timerTextWidthRef.current,
+              progressWidth - timerTextWidthRef.current,
+              screenWidth - 8,
+            ),
+          }}>
           {timerText}
         </Text>
       </>

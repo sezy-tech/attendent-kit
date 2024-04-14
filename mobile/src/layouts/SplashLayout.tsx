@@ -1,67 +1,73 @@
-
-import React, { useEffect } from 'react';
-import {
-    Text,
-} from 'react-native';
-import { useRouter } from '../store/router.store';
+import React, {useEffect, useState} from 'react';
+import {Alert, Text, View} from 'react-native';
+import {useRouter} from '../store/router.store';
 import userApi from '../api/user.api';
-import { User } from 'firebase/auth';
-import { useUserStore } from '../store/user.store';
-
-
+import {User} from '../models/db.model';
+import {useUserStore} from '../store/user.store';
+import messaging from '@react-native-firebase/messaging';
+import useFCMNotifications from '../components/PassDataNotification';
+import {IconButton} from 'react-native-paper';
+import Icon from '../components/Icon';
 function SplashLayout() {
-const {navigate} = useRouter()
-const userStore = useUserStore();
+  const {navigate} = useRouter();
+  const userStore = useUserStore();
+  const [userProfile, setUserProfile] = useState<User>();
 
- async function FetchUser(){
-    const userProfileData = await userApi.getProfile()
-    if(!userProfileData){
-        navigate('/login')
+  const checkInitialNotification = async () => {
+    const initialNotification = await messaging().getInitialNotification();
+    if (initialNotification) {
+      console.log(
+        'noti caused app to open from quit state',
+        initialNotification,
+      );
+      navigate('/verify-face');
+      return true;
     }
-    if(!userProfileData?.hasFaceInput){
-        navigate('/onboarding') 
+  };
+  //   checkInitialNotification()
+
+  async function fetchUser() {
+    const check = await checkInitialNotification();
+    if (check) return;
+  
+    const userProfileData = await userApi.getProfile();
+    console.log(userProfileData)
+    setUserProfile(userProfileData);
+    userStore.actions.setProfile(userProfileData);
+    if (!userProfileData) {
+      console.log('no user data');
+      return navigate('/login');
     }
-    if(!userProfileData?.hasSpeechInput){
-        navigate('/onboarding') 
+  
+    if (userProfileData.role === 1 &&
+      (!userProfileData?.hasFaceInput || !userProfileData?.hasSpeechInput)
+    ) {
+      return navigate('/onboarding');
     }
-    else{
-    userStore.actions.setProfile(userProfileData)
-    console.log( userStore.data.state.verify.faceVerify)
-    navigate('/onboarding') 
+  
+    if (userProfileData.role === 10) {
+      return navigate('/dashboard');
     }
+  
+    if (userProfileData.role === 3) {
+      return navigate('/parent');
+    }
+  
+    navigate('/home');
+  }
+
+  useEffect(() => {
+    fetchUser();
+  }, [userProfile]);
+
+  return (
+    <View style={{flex: 1, alignItems: 'center',justifyContent:'center'}}>
+      <IconButton
+        icon={() => <Icon name="progress" />}
+        size={10}
+        onPress={() => {}}
+      />
+    </View>
+  );
 }
-    useEffect(() => {
-        FetchUser()
-        // router.dispatch.navigate(firebase.auth().currentUser ? '/home' : '/login')
-        // const user = firebase.auth().currentUser;
-
-        // if (user) {
-        //     const userId = user.uid;
-        //     const reference = database().ref(`/users/${userId}`);
-
-        //     reference.on('value', (snapshot) => {
-        //         if (snapshot.exists()) {
-        //             console.log('User data:', snapshot.val());
-        //         } else {
-        //             console.log('User data does not exist.');
-        //         }
-        //     });
-
-        //     // Clean up the subscription when the component unmounts
-        //     return () => {
-        //         reference.off(); // Unsubscribe from changes
-        //     };
-        // } else {
-        //     console.log('User is not authenticated.');
-        // }
-        // navigate('/onboarding')
-    }, [])
-
-    return (
-        <Text>
-            Loading...
-        </Text>
-    );
-}
-
 export default SplashLayout;

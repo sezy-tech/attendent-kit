@@ -1,13 +1,26 @@
 import React, {useEffect, useState} from 'react';
 import {Alert, Button, Text} from 'react-native';
 import {View} from 'react-native';
-import {DataTable, Modal, Portal, TextInput} from 'react-native-paper';
+import {
+  DataTable,
+  IconButton,
+  Modal,
+  Portal,
+  RadioButton,
+  TextInput,
+} from 'react-native-paper';
 import roomApi from '../../api/room.api';
 import {useRouter} from '../../store/router.store';
 import {Controller, useForm} from 'react-hook-form';
-import userApi from '../../api/user.api';
+import userApi, {UserInfo} from '../../api/user.api';
+import {User} from '../../models/db.model';
+import Select from '../../components/Select';
+import Icon from '../../components/Icon';
+import Header from '../../components/Header';
+type UserInfoWithoutDeviceId = Omit<User, 'deviceId'>;
 
 interface FormData {
+  _id: string;
   password: string;
   email: string;
   phone: string;
@@ -17,49 +30,88 @@ interface Room {
   _id: string;
   name: string;
 }
-
+type EditableUserInfo = Omit<
+  UserInfo,
+  '__v' | 'deviceIds' | 'password' | 'role'
+>;
 export default function UserLayout() {
   const initData: FormData = {
+    _id: '',
     password: '',
     email: '',
     phone: '',
     role: 1,
   };
+  type UserInfoWithoutId = Omit<UserInfo, '_id'>;
   const {
+    setValue,
     control,
     handleSubmit,
+    getValues,
+    reset,
     formState: {errors},
   } = useForm<FormData>({defaultValues: initData});
   const onSubmit = async (data: FormData) => {
-   const result = await userApi.createUser(data)
-   console.log(result)
+    const {_id, ...dataWithOutId} = data;
+    console.log(dataWithOutId);
+    const result = await userApi.createUser(dataWithOutId);
+    console.log(result);
   };
-
+  const onEditSubmit = async (data: FormData) => {
+    console.log(data);
+    await userApi.edit(data);
+    hideModal();
+  };
+  
+  const [stage, setStage] = useState<'edit' | 'add'>();
   const [visible, setVisible] = useState(false);
   const showModal = () => setVisible(true);
   const hideModal = () => setVisible(false);
-  const [RoomList, setRoomList] = useState<Room[]>([]);
+  const [userList, setUserList] = useState<UserInfo[]>([]);
   async function fetchData() {
-    const roomData = await roomApi.getAllRoom();
-    setRoomList(roomData);
+    const userData = await userApi.getAll();
+    setUserList(userData);
   }
-
+  const handleAdd = () => {
+    reset()
+    setStage('add');
+    showModal();
+  };
   useEffect(() => {
     fetchData();
-  }, [RoomList]);
+  }, [userList]);
 
-  const handleEditRoom = async (id: string) => {
-    Alert.alert('edit');
+  const handleEditUser = async (data: UserInfo) => {
+    setStage('edit');
+    setValue('_id', data._id);
+    setValue('email', data.email);
+    setValue('phone', data.phone);
+    setValue('role', data.role);
+    setValue('_id', data._id);
+    showModal();
   };
-  const handleDeleteRoom = async (id: string) => {
-    roomApi.deleteRoom(id);
+
+  const handleDeleteUser = async (id: string) => {
+    // roomApi.deleteRoom(id);
+    await userApi.delete(id);
+    Alert.alert('delete successful');
   };
+
+  const roleOptions = [
+    {label: 'student', value: 1},
+    {label: 'lecturer', value: 2},
+  ];
   const {navigate} = useRouter();
   return (
-    <View>
-      <Text>this is admin dashboard</Text>
+    <View style={{flex: 1, backgroundColor: '#cfdec1'}}>
+       <Header hasBack /> 
       <View style={{width: 100, position: 'absolute', right: 0, padding: 10}}>
-        <Button title="create user" onPress={showModal} />
+        <IconButton
+          icon={() => <Icon name="plus" />}
+          size={10}
+          onPress={handleAdd}
+        />
+
         <Portal>
           <Modal
             visible={visible}
@@ -111,54 +163,72 @@ export default function UserLayout() {
                   </View>
                 )}
               />
+              {stage === 'edit' ? null : (
+                <Controller
+                  control={control}
+                  name="password"
+                  render={({field}) => (
+                    <View>
+                      <TextInput
+                        style={{
+                          height: 40,
+                          width: 200,
+                          borderColor: 'gray',
+                          borderWidth: 1,
+                        }}
+                        {...field}
+                        onChangeText={field.onChange}
+                        placeholder="password"
+                      />
+                    </View>
+                  )}
+                />
+              )}
               <Controller
                 control={control}
-                name="password"
-                render={({field}) => (
-                  <View>
-                    <TextInput
-                      style={{
-                        height: 40,
-                        width: 200,
-                        borderColor: 'gray',
-                        borderWidth: 1,
-                      }}
-                      {...field}
-                      onChangeText={field.onChange}
-                      placeholder="password"
-                    />
-                  </View>
+                name="role"
+                render={field => (
+                  <Select
+                    title="Pick role"
+                    options={roleOptions ?? []}
+                    style={{width: 110, paddingTop: 20}}
+                    optionsStyle={{minWidth: 200}}
+                    onChange={(value: any) => setValue('role', value)}
+                  />
                 )}
               />
-
-             
             </View>
-            <Button title="add" onPress={handleSubmit(onSubmit)} />
+            {stage === 'add' ? (
+              <Button title="add" onPress={handleSubmit(onSubmit)} />
+            ) : (
+              <Button title="apply" onPress={() => onEditSubmit(getValues())} />
+            )}
           </Modal>
         </Portal>
       </View>
-      <View style={{paddingTop: 50}}>
+      <View style={{paddingTop: 20}}>
         <DataTable>
           <DataTable.Header>
-            <DataTable.Title sortDirection="descending">
-              Dessert
-            </DataTable.Title>
-            <DataTable.Title numeric>name (g)</DataTable.Title>
+            <DataTable.Title>Index</DataTable.Title>
+            <DataTable.Title numeric>Email</DataTable.Title>
             <DataTable.Title numeric style={{paddingRight: 50}}>
-              manage
+              Manage
             </DataTable.Title>
           </DataTable.Header>
-          {RoomList.map((item, index) => (
+          {userList.map((item, index) => (
             <DataTable.Row key={index}>
               <DataTable.Cell>{index}</DataTable.Cell>
-              <DataTable.Cell numeric>{item.name}</DataTable.Cell>
+              <DataTable.Cell>{item.email}</DataTable.Cell>
               <DataTable.Cell numeric>
-                <Button onPress={() => handleEditRoom(item._id)} title="edit" />
-              </DataTable.Cell>
-              <DataTable.Cell numeric>
-                <Button
-                  onPress={() => handleDeleteRoom(item._id)}
-                  title="delete"
+                <IconButton
+                  icon={() => <Icon name="edit" />}
+                  size={10}
+                  onPress={() => handleEditUser(item)}
+                />
+                <IconButton
+                  icon={() => <Icon name="deleteitem" />}
+                  size={10}
+                  onPress={() => handleDeleteUser(item._id)}
                 />
               </DataTable.Cell>
             </DataTable.Row>

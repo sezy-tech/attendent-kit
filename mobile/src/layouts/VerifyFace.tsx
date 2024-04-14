@@ -51,9 +51,8 @@ export default function VerifyFace(){
           console.log(newLandmarkPoint)
           const verifyResult = await recognitionApi.verifyFace(newLandmarkPoint)
         if(verifyResult){
-         
           userData.data.state.verify.faceVerify = true;
-          navigate('/onboarding')
+          navigate('/home')
         }
         })
       }

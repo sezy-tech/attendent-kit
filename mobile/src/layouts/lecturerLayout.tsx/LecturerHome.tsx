@@ -8,45 +8,50 @@ import {
   View,
 } from 'react-native';
 
-import {useRouter} from '../store/router.store';
-
 import {Appbar, Avatar, Card, IconButton} from 'react-native-paper';
-import Icon from '../components/Icon';
-import {useUserStore, userStore} from '../store/user.store';
-import BackgroundImage from '../components/BackgroundImage';
-
+import {useRouter} from '../../store/router.store';
+import {useUserStore} from '../../store/user.store';
+import BackgroundImage from '../../components/BackgroundImage';
+import Icon from '../../components/Icon';
+import Header from '../../components/Header';
 // import { useAppStore } from '../store/app.store';
 // import { FaceDetector } from '../features/FaceDetector';
 
-function HomeLayout(): JSX.Element {
+function LecturerHome(): JSX.Element {
   console.log('=============HomeLayout=============');
 
   const MORE_ICON = Platform.OS === 'ios' ? 'dots-horizontal' : 'dots-vertical';
   const {navigate} = useRouter();
   const useStore = useUserStore();
-
+  const router = useRouter();
+  const routerHisory = router.getHistory();
   useEffect(() => {}, []);
   return (
     <View style={{flex: 1}}>
-      <BackgroundImage source={require('../../assets/images/bg3.jpeg')} />
-      <Appbar.Header style={{backgroundColor: '#eddcf7'}}>
-        <TouchableOpacity style={{flexDirection:'row'}} onPress={()=>navigate('/profile')}>
-          <Avatar.Image
-            size={48}
-            source={require('../../assets/images/avt.png')}
-          />
-          <Text style={{justifyContent:'center',alignItems:'center',alignSelf:'center'}}> hi {userStore.state.user.email}</Text>
-        </TouchableOpacity>
-      </Appbar.Header>
+      <BackgroundImage source={require('../../../assets/images/bg3.jpeg')} />
+      <View style={{ flexDirection:'row'}}>
+      <Header hasBack />  
+      <View style={{right:0,position:'absolute',padding:5}}>
+      <Avatar.Image
+          size={48}
+          source={require('../../../assets/images/avt.png')}
+        />
+      </View>
+      </View>
+       
       <TouchableOpacity
         style={{paddingTop: 50}}
-        onPress={() => navigate('/schedule')}>
+        onPress={() => navigate('/schedule-lecturer')}>
         <View style={{padding: 20, gap: 5, width: 300}}>
           <Card>
             <Card.Title
               title="Schedule in Week"
               subtitle={``}
-              left={props => <Icon name={'tap'} />}
+              left={props => (
+                <View style={{marginLeft: 10}}>
+                  <Icon name={'tap'} />
+                </View>
+              )}
             />
             <Card.Content>
               <Text>Check Attendance</Text>
@@ -58,4 +63,4 @@ function HomeLayout(): JSX.Element {
   );
 }
 
-export default HomeLayout;
+export default LecturerHome;

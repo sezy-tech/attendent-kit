@@ -1,41 +1,47 @@
-import axios from "axios";
-import apiClient from "./apiClient";
-interface Subject {
-    _id : string,
-    name :string,
+import axios from 'axios';
+import apiClient from './apiClient';
+export interface SubjectForm {
+  _id: string;
+  name: string;
+  room: string;
+  students: string[];
+  lecturers: string[];
+  startTime: number;
+  endTime: number;
+  dayInWeek: number;
 }
 const subjectApi = {
-getAll: async () => {
+  getAll: async () => {
     const url = `/subject`;
-    const rsp = await apiClient.get<Subject[]>(url);
-    return rsp.data
-},
-  create : async (data : any) => {
-    try{
-      const url = `/subject`
-      const rsp = await apiClient.post(url, data)
-      return rsp.data
-    }catch(e){
-      console.log(e)
+    const rsp = await apiClient.get<any[]>(url);
+    return rsp.data;
+  },
+  create: async (data: any) => {
+    try {
+      const url = `/subject`;
+      const rsp = await apiClient.post(url, data);
+      return rsp.data;
+    } catch (e) {
+      console.log(e);
     }
-  
   },
-  edit : async (data : any) => {
-    const url = `/subject/${data._id}`
-    const rsp = await apiClient.patch(url, data)
-    return rsp.data
+  edit: async (data: SubjectForm) => {
+    const {_id, ...subjectWithOutId} = data;
+    console.log(subjectWithOutId)
+    const url = `/subject/${data._id}`;
+    const rsp = await apiClient.patch(url, subjectWithOutId);
+    return rsp.data;
   },
-  delete : async (id : string)=>{
-    const url = `/subject/${id}`
-    const rsp = await apiClient.delete<string>(url)
-    return rsp.data
+  delete: async (id: string) => {
+    const url = `/subject/${id}`;
+    const rsp = await apiClient.delete<string>(url);
+    return rsp.data;
   },
-  addStudent : async (id : string, studentid : any)=> {
-    const url = `/subject/${id}`
-    const rsp = await apiClient.post(url,studentid)
-    return rsp.data
-  }
+  addStudent: async (id: string, studentid: any) => {
+    const url = `/subject/${id}`;
+    const rsp = await apiClient.post(url, studentid);
+    return rsp.data;
+  },
 };
 
-
-export default subjectApi
+export default subjectApi;

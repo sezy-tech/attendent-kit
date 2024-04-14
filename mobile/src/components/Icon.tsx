@@ -1,7 +1,6 @@
 import React from 'react';
 import { SvgProps } from 'react-native-svg';
 import { View } from 'react-native';
-
 import arrow_left from '../../assets/icons/arrow_left.svg';
 import menu from '../../assets/icons/menu.svg';
 import chevron_left from '../../assets/icons/chevron_left.svg';
@@ -43,9 +42,29 @@ import loading from '../../assets/icons/loading.svg';
 import relationship from '../../assets/icons/relationship.svg';
 import warning_triangle from '../../assets/icons/warning-triangle.svg';
 import progress from '../../assets/icons/progress.svg';
+import calender from '../../assets/icons/calender.svg';
+import classicon from '../../assets/icons/class.svg';
+import userplus from '../../assets/icons/userplus.svg';
+import room from '../../assets/icons/room.svg';
+import edit from '../../assets/icons/edit.svg';
+import deleteitem from '../../assets/icons/delete.svg';
+import key from '../../assets/icons/key.svg';
+import email from '../../assets/icons/email.svg';
+import clock from '../../assets/icons/clock.svg';
+import facescan from '../../assets/icons/facescan.svg';
+import voice from '../../assets/icons/voice.svg';
 import { get } from 'lodash';
 import theme from '../styles/theme.style'
 const icons = {
+  facescan,
+  voice,
+  clock,
+  edit,
+  deleteitem,
+  room,
+  userplus,
+  classicon,
+  calender,
   arrow_left,
   menu,
   chevron_left,
@@ -87,6 +106,8 @@ const icons = {
   relationship,
   warning_triangle,
   progress,
+  key,
+  email,
 };
 
 interface IconProps {
