@@ -1,0 +1,9 @@
+.yarn
+.npm
+mobile/android
+node_modules
+ai-server/faces
+ai-server/venv
+.env
+FirebaseConfig.ts
+service_account.json
