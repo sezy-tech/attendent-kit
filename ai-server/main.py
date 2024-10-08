@@ -276,7 +276,7 @@ def compare_each_face(user_folder, unknown_face_encoding):
                 continue
 
             match_found = face_recognition.compare_faces(
-                [known_face_encoding], unknown_face_encoding, tolerance=0.3
+                [known_face_encoding], unknown_face_encoding, tolerance=0.6
             )
             app.logger.info(f"Face {filename}: {match_found}")
             if match_found[0]:  # If a match is found, exit early
